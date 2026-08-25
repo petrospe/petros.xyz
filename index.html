@@ -13,7 +13,7 @@
 <body>
 <!-- partial:index.partial.html -->
 <div class="header">
-  <a href="//me.petros.xyz" class="link-header" title="Go Dark Mode"><i class="fa fa-moon-o" aria-hidden="true"></i></a>
+  <a href="//me.petros.xyz" id="myLink" class="link-header" title="Go Dark Mode"><i class="fa fa-moon-o" aria-hidden="true"></i></a>
 </div>
 <div class="wrapper">
   <h1><span class="dot">petros_pe</span>tropoulos</h1>
@@ -27,6 +27,23 @@
   </div>
  </div>
 <!-- partial -->
+<script>
+  document.getElementById('myLink').addEventListener('click', function(e) {
+    e.preventDefault(); // Ακυρώνει το άμεσο άνοιγμα
+    
+    const targetUrl = "https://me.petros.xyz";
+    const fallbackUrl = "https://ipfs.io/ipfs/bafkreid3cuwbn55mq5tbevoelh7febefmyfucecsxmkssimbgvu25sojmu";
 
+    fetch(targetUrl, { mode: 'no-cors' })
+      .then(response => {
+        // Αν η σελίδα ανταποκριθεί, πήγαινε εκεί
+        window.location.href = targetUrl;
+      })
+      .catch(() => {
+        // Αν υπάρχει σφάλμα δικτύου / είναι offline
+        window.location.href = fallbackUrl;
+      });
+  });
+</script>
 </body>
 </html>
