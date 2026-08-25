@@ -29,18 +29,23 @@
 <!-- partial -->
 <script>
   document.getElementById('myLink').addEventListener('click', function(e) {
-    e.preventDefault(); // Ακυρώνει το άμεσο άνοιγμα
+    e.preventDefault();
     
     const targetUrl = "https://me.petros.xyz";
     const fallbackUrl = "https://ipfs.io/ipfs/bafkreid3cuwbn55mq5tbevoelh7febefmyfucecsxmkssimbgvu25sojmu";
 
-    fetch(targetUrl, { mode: 'no-cors' })
-      .then(response => {
-        // Αν η σελίδα ανταποκριθεί, πήγαινε εκεί
-        window.location.href = targetUrl;
+    fetch(targetUrl)
+      .then(response => response.text()) // Μετατροπής της απάντησης σε κείμενο
+      .then(htmlText => {
+        // Ελέγχει αν το HTML περιέχει τη φράση σφάλματος του Heroku
+        if (htmlText.includes("Application error") || htmlText.includes("heroku logs")) {
+          window.location.href = fallbackUrl;
+        } else {
+          window.location.href = targetUrl;
+        }
       })
       .catch(() => {
-        // Αν υπάρχει σφάλμα δικτύου / είναι offline
+        // Αν υπάρξει σφάλμα σύνδεσης ή CORS policy
         window.location.href = fallbackUrl;
       });
   });
