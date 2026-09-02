@@ -34,20 +34,38 @@
     const targetUrl = "https://me.petros.xyz";
     const fallbackUrl = "https://ipfs.io/ipfs/bafkreid3cuwbn55mq5tbevoelh7febefmyfucecsxmkssimbgvu25sojmu";
 
-    fetch(targetUrl)
-      .then(response => response.text()) // Μετατροπής της απάντησης σε κείμενο
-      .then(htmlText => {
-        // Ελέγχει αν το HTML περιέχει τη φράση σφάλματος του Heroku
-        if (htmlText.includes("Application error") || htmlText.includes("heroku logs")) {
-          window.location.href = fallbackUrl;
-        } else {
-          window.location.href = targetUrl;
-        }
-      })
-      .catch(() => {
-        // Αν υπάρξει σφάλμα σύνδεσης ή CORS policy
+    let redirected = false;
+
+    // Αν καθυστερήσει πάνω από 2.5 δευτερόλεπτα ή "κολλήσει" το Heroku -> IPFS
+    const timer = setTimeout(() => {
+      if (!redirected) {
+        redirected = true;
         window.location.href = fallbackUrl;
-      });
+      }
+    }, 2500);
+
+    // Δημιουργία κρυφού iframe για δοκιμαστική φόρτωση
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = targetUrl;
+
+    iframe.onload = function() {
+      if (!redirected) {
+        redirected = true;
+        clearTimeout(timer);
+        window.location.href = targetUrl;
+      }
+    };
+
+    iframe.onerror = function() {
+      if (!redirected) {
+        redirected = true;
+        clearTimeout(timer);
+        window.location.href = fallbackUrl;
+      }
+    };
+
+    document.body.appendChild(iframe);
   });
 </script>
 </body>
